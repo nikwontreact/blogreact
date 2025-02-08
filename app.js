@@ -1,10 +1,22 @@
 require("dotenv").config();
-
+const cors = require("cors");
 const path = require("path");
 const express = require("express");
 const mongoose = require("mongoose");
 const cookiePaser = require("cookie-parser");
 
+const app = express();
+const allowlist = ["http://localhost:5173"];
+app.use(cors({
+  origin: function (origin, callback) {
+    if (allowlist.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  },
+  credentials: true
+}));
 const Blog = require("./models/blog");
 
 const userRoute = require("./routes/user");
@@ -14,7 +26,7 @@ const {
   checkForAuthenticationCookie,
 } = require("./middlewares/authentication");
 
-const app = express();
+
 const PORT = process.env.PORT || 8000;
 
 mongoose
